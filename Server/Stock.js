@@ -14,6 +14,7 @@ export default class Stock
         this.Mult = mult;
         this.Risk = risk;
     }
+    
     Step() {
         const currentPrice = this.CostData[this.CostData.length - 1];
 
