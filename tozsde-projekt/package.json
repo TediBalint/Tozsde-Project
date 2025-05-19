@@ -14,7 +14,9 @@
     "vite": "^6.3.5"
   },
   "dependencies": {
+    "@cubejs-client/core": "^0.31.0",
     "bootstrap": "^5.3.6",
+    "chart.js": "^4.0.1",
     "sass": "^1.89.0",
     "scss": "^0.2.4",
     "ws": "^8.18.2"
