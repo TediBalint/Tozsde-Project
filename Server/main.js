@@ -1,26 +1,37 @@
-const WebSocket = require('ws');
-const { default: Stock } = require('./Stock');
-const wss = new WebSocket.Server({ port: 8080 });
+import { WebSocketServer } from "ws";
 
-wss.on('connection', function connection(ws) {
-//connected
-ws.on('message', function incoming(message) {
-let answer = "";
-switch (message) {
-    case "buy":
-        Stock.Buy();
-        break;
-    case "sell":
-        Stock.Sell();
-        break;
-    case "GetCurrntPrice":
-        answer = Stock.GetCurrentPrice().ToString();
-        break;
-}
-ws.send(answer);
-});
+const server = new WebSocketServer({
+    port:8080
+})
 
-ws.on('close', function () {
-//disconnect
-});
-});
+
+server.on('connection', (socket)=>{
+    ws.on('message', function incoming(message) {
+        let answer = "";
+        switch (message) {
+            case "buy":
+                Stock.Buy();
+                break;
+            case "sell":
+                Stock.Sell();
+                break;
+            case "GetCurrntPrice":
+                answer = Stock.GetCurrentPrice().ToString();
+                break;
+        }
+        ws.send(answer)
+    })
+})
+
+server.on('close', ()=>{
+
+})
+
+server.on('error',(error)=>{ 
+    console.log(error.message);
+})
+
+
+// npx nodemon index.js
+
+// node index.js ->kész program
