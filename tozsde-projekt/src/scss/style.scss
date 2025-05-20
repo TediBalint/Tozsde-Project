@@ -28,6 +28,7 @@ body{
         inset $background 2px 2px 30px
     ;
     padding: 50px 50px 10px 50px;
+    margin-bottom: 10px;
 }
 canvas{
     margin-left: auto;
@@ -60,10 +61,23 @@ canvas{
 .selectedStock{
     background-color: $green !important;
 }
-// .selectedStock:hover{
-//     background-color: adjust-color($color: $green, $saturation: 10%) !important;
-// }
 #mainGraph{
     width: 100%;
     margin: 5px 0;
+}
+#trading button:not(button.btn){
+    background-color: $orange;
+    border: 0;
+    border-radius: 5px;
+    height: 30px;
+    width: 50px;
+    &:hover{
+        background-color: #b77d11;
+    }
+}
+#trading input{
+    width: 100px !important;
+}
+#trading select{
+    height: 30px;
 }

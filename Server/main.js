@@ -1,12 +1,15 @@
 import { WebSocketServer } from "ws";
+import Stock from "./Stock.js";
 
 const server = new WebSocketServer({
-    port:8081
+    port:8081,
+    host:"localhost"
 })
 
 
 server.on('connection', (socket)=>{
-    // ws.on('message', function incoming(message) {
+    console.log("client connected")
+    socket.on('message', (message) => {
     //     let answer = "";
     //     switch (message) {
     //         case "buy":
@@ -20,7 +23,11 @@ server.on('connection', (socket)=>{
     //             break;
     //     }
     //     ws.send(answer)
-    // }) -- kicrashel miatta
+    })
+    socket.send("grafikon teszt trigger")
+    // while(true){
+    //     socket.send(Step) ez kell majd
+    // }
 })
 
 server.on('close', ()=>{
@@ -30,7 +37,7 @@ server.on('close', ()=>{
 server.on('error',(error)=>{ 
     console.log(error.message);
 })
-
+console.log("server started")
 
 // npx nodemon index.js
 
