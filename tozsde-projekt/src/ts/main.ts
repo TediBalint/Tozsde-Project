@@ -3,43 +3,35 @@ import Chart, { ChartItem } from 'chart.js/auto'
 import ChartTimeOject from './ChartTimeObject';
 
 const ctx = document.getElementById('mainGraph') as ChartItem;
+let ws: WebSocket
 
-const testData: ChartTimeOject[] = [
-    {time:0, value:10},
-    {time:1, value:20},
-    {time:2, value:10},
-    {time:3, value:90},
-    {time:4, value:40},
-    {time:5, value:2}
-]
+const connection = () =>{
+    ws = new WebSocket('ws://localhost:8081');
+    ws.onopen = () =>{
+        console.log('Connected to server');
+    }
+    ws.onclose = () =>{
+        console.log('Disconnected from server');
+    }
+}
+window.onload = connection;
+(document.querySelector("#loginBtn") as HTMLButtonElement).addEventListener("click", ()=>{
+  //login folyamatot majd a backendes megirja
+  (document.querySelector("#login") as HTMLElement).style.display = "none";
+  (document.querySelector("#trading") as HTMLElement).style.display = "block";
+})
+let stocksNames = ["nvidia", "coca cola", "example3"]; // nyilvan nem lesz statikus ez sem
 
-new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: testData.map(row => row.time),
-        datasets: [
-          {
-            data: testData.map(row => row.value)
-          }
-        ]
-      }
+for(let stock of stocksNames){
+  let btn = document.createElement("button")
+  btn.textContent = stock;
+  if (stock == stocksNames[0]){
+    btn.classList.add("selectedStock")
+  }
+  btn.addEventListener("click", ()=>{
+    
+
   });
+  (document.querySelector("#stockSelector") as HTMLElement).appendChild(btn)
 
-//   new Chart(ctx, {
-//     type: 'bar',
-//     data: {
-//       labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-//       datasets: [{
-//         label: '# of Votes',
-//         data: [12, 19, 3, 5, 2, 3],
-//         borderWidth: 1
-//       }]
-//     },
-//     options: {
-//       scales: {
-//         y: {
-//           beginAtZero: true
-//         }
-//       }
-//     }
-//   });
+}

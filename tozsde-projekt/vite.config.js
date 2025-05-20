@@ -9,7 +9,7 @@ export default defineConfig({
     },
     base:'./',  // a build-elt alkalmazás eléresi útja - relatív útvonal!!!
     publicDir: '../public', // statikus elemek (pl.: képek) helye
-    appType: 'mpa', // Single Page Application
+    appType: 'spa', // Single Page Application
   
     css: {
         preprocessorOptions: {
