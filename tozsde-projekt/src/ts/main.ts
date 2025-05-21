@@ -11,34 +11,43 @@ const connection = () =>{
   ws.onopen = () =>{
     console.log('Connected to server');
     updateStockButtons()
-
   }
   ws.onmessage = (event) =>{
-    console.log(event);
-const data = [ // teszt adatsor, majd ws küldi
-    { year: 2010, count: 10 },
-    { year: 2011, count: 20 },
-    { year: 2012, count: 15 },
-    { year: 2013, count: 25 },
-    { year: 2014, count: 22 },
-    { year: 2015, count: 30 },
-    { year: 2016, count: 28 },
-  ];
+    const data: ChartTimeOject[] = [ // teszt adatsor, majd ws küldi
+      { time: 0, value: 10 },
+      { time: 1, value: 20.5 },
+      { time: 2, value: 10 },
+      { time: 3, value: 50 },
+      { time: 4, value: 65 },
+      { time: 5, value: 30 },
+      { time: 6, value: 30 }
+    ];
+    let slicedDatasets:Array<any> = []
+    for (let i = 0; i < data.length - 1; i++) {
+      let tempData = data.slice(i, i + 2).map(row => row.value)
+      for(let j = 0; j < i; j++) tempData.unshift(NaN)
+      slicedDatasets.push(
+        {
+          borderColor: data[i].value < data[i + 1].value ? "#40db69" : (data[i].value > data[i + 1].value ? "#e69e19" : "#aaa"), //data[i].value < data[i + 1].value ? "#40db69" : "#e69e19",
+          data: tempData
+        }
+      )      
+    }
     new Chart(ctx, {
       type: 'line',
-      data:{
-        labels: data.map(row => row.year),
-        datasets: [
-          {
-            // label: 'Acquisitions by year',
-            data: data.map(row => row.count)
+      options:{
+        plugins:{
+          legend:{
+            display:false
           }
-        ]
+        }
+      },
+      data:{
+        labels: data.map(row => row.time), 
+        datasets: slicedDatasets
       }
     })
-  } // https://www.chartjs.org/docs/latest/getting-started/usage.html
-   // https://stackoverflow.com/questions/52120036/chartjs-line-color-between-two-points
-   //https://stackoverflow.com/questions/37204298/how-can-i-hide-dataset-labels-in-chart-js-v2
+    }
   ws.onclose = () =>{
     console.log('Disconnected from server');
   }
