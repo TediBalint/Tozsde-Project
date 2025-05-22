@@ -1,10 +1,11 @@
 import '../scss/style.scss';
 import Chart, { ChartItem } from 'chart.js/auto'
-import ChartTimeOject from './ChartTimeObject';
+import ChartTimeObject from './ChartTimeObject';
 
 const ctx = document.getElementById('mainGraph') as ChartItem;
 let ws: WebSocket
-
+const username = (document.querySelector("#username") as HTMLInputElement)
+const Password = (document.querySelector("#pwd") as HTMLInputElement)
 
 const connection = () =>{
   ws = new WebSocket('ws://localhost:8081');
@@ -13,7 +14,7 @@ const connection = () =>{
     updateStockButtons()
   }
   ws.onmessage = (event) =>{
-    const data: ChartTimeOject[] = [ // teszt adatsor, majd ws küldi
+    const data: ChartTimeObject[] = [ // teszt adatsor, majd ws küldi
       { time: 0, value: 10 },
       { time: 1, value: 20.5 },
       { time: 2, value: 10 },
@@ -54,9 +55,7 @@ const connection = () =>{
 }
 window.onload = connection;
 (document.querySelector("#loginBtn") as HTMLButtonElement).addEventListener("click", ()=>{
-  //login folyamatot majd a backendes megirja
-  (document.querySelector("#login") as HTMLElement).style.display = "none";
-  (document.querySelector("#trading") as HTMLElement).style.display = "block";
+  login();
 })
 let stocksNames = ["nvidia", "coca cola", "example3"]; // nyilvan nem lesz statikus ez sem
 let currentStock = stocksNames[0]
@@ -77,5 +76,28 @@ const updateStockButtons = () =>{
       updateStockButtons()
     });
     stockButtons.appendChild(btn)
+  }
+}
+
+const login = () =>{
+  console.log("login");
+  const user = username.value;
+  const pass = Password.value;
+  ws.send(JSON.stringify({type: "login", user, pass}));
+  ws.onmessage = (event) =>{
+    const data = JSON.parse(event.data);
+    if(data.type == "login"){
+      if(data.success){
+        (document.querySelector('#usrnm') as HTMLElement).textContent = user;
+        console.log(data);
+        (document.querySelector('#userStockCount') as HTMLElement).textContent = data.balance;
+        (document.querySelector("#trading") as HTMLElement).style.display = "block";
+        (document.querySelector("#login") as HTMLElement).style.display = "none";
+        
+      }
+      else if(data.success == false){
+        alert("Hibás felhasználónév vagy jelszó!");
+      }
+    }
   }
 }
