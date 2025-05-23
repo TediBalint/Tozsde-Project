@@ -1,70 +1,58 @@
 import { WebSocketServer } from "ws";
-import Stock from "./Stock.js";
-import fs from 'fs';
-var users = JSON.parse(fs.readFileSync('./data/users.json', 'utf8'));
+import ClientActions from "./ClientActions.js";
+import Serverside from "./Serveractions.js";;
 
-const server = new WebSocketServer({
-    port:8081,
-    host:"localhost"
-})
 
-server.on('connection', (socket) => {
-    console.log("client connected");
-    socket.send("grafikon teszt trigger");
-    socket.on('message', (message) => {
-        try {
-            const data = JSON.parse(message);
-            console.log(data);
-            if (data.type == "login") {
-                const { user, pass } = data;
-                let foundUser = filterByUsername(users, user);
-                console.log(foundUser);
-                if (foundUser === undefined || foundUser.Password !== pass) {
-                    socket.send(JSON.stringify({ 
-                        type: "login", 
-                        success: false, 
-                    }));
-                    console.log("Login failed");
-                }
-                else{
-                    socket.send(JSON.stringify({ type: "login", success: true, balance: foundUser.Balance }));
-                    console.log("Login successful");
-                }
-            }
-            if (data.type === "stock") {
-                // Implement stock logic here if needed
-                // Example:
-                // let answer = "";
-                // switch (data.action) {
-                //     case "buy":
-                //         Stock.Buy();
-                //         break;
-                //     case "sell":
-                //         Stock.Sell();
-                //         break;
-                //     case "GetCurrentPrice":
-                //         answer = Stock.GetCurrentPrice().toString();
-                //         break;
-                // }
-                // socket.send(answer);
-            }
-        } catch (e) {
-            socket.send(JSON.stringify({ type: "error", message: "Invalid message format" }));
+Serverside.server.on("connection", (socket) => {
+  socket.on("message", (message) => {
+    Serverside.UpdateStockList(socket);
+    Serverside.SimulateStocks(socket);
+    try {
+      const data = JSON.parse(message);
+      let User = filterByName(Serverside.Userlist, data.user);
+      if (data.type == "login") {
+        ClientActions.Login(socket, User, data.pass);
+      }
+      if (data.type === "stock") {
+        let stock = filterByName(Serverside.Stocklist, data.stock);
+        if (!StockCheck(socket, stock)) {
+          return;
         }
-    });
+        if (data.action == "buy") {
+          ClientActions.BuyStock(socket, User, stock, data.amount);
+        }
+        if (data.action == "sell") {
+          ClientActions.SellStock(socket, User, stock, data.amount);
+        }
+        if (data.goal == "getData") {
+          setInterval(() => {
+            Serverside.SendStockData(socket, stock);
+          }, 10000);
+        }
+        if (data.action == "alarm") {
+          ClientActions.SetAlarm(stock, data.goal);
+        }
+      }
+    } catch (e) {
+      socket.send(
+        JSON.stringify({
+          type: "error",
+          message: "Invalid message format",
+        })
+      );
+    }
+  });
 });
 
-server.on('close', ()=>{
 
-})
-
-server.on('error',(error)=>{ 
-    console.log(error.message);
-})
-console.log("server started")
+console.log("server started");
 
 // npx nodemon index.js
 
 // node index.js ->kész program
 
-function filterByUsername(jsonObject, username) {return jsonObject.filter(function(jsonObject) {return (jsonObject['Name'] == username);})[0];}
+function filterByName(jsonObject, username) {
+  return jsonObject.filter(function (jsonObject) {
+    return jsonObject["Name"] == username;
+  })[0];
+}
