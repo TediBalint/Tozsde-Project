@@ -1,0 +1,32 @@
+[
+    {
+        "Name": "nvidia",
+        "Id": 1,
+        "CostData": [100, 102, 101, 105, 110],
+        "Risk": 3,
+        "Mult": 1.2,
+        "ChangeRate": 0.05,
+        "MaxCount": 1000,
+        "Count": 500
+    },
+    {
+        "Name": "coca cola",
+        "Id": 2,
+        "CostData": [200, 198, 202, 205, 210],
+        "Risk": 2,
+        "Mult": 1.1,
+        "ChangeRate": 0.03,
+        "MaxCount": 800,
+        "Count": 300
+    },
+    {
+        "Name": "example3",
+        "Id": 3,
+        "CostData": [50, 52, 51, 49, 53],
+        "Risk": 4,
+        "Mult": 1.3,
+        "ChangeRate": 0.07,
+        "MaxCount": 1200,
+        "Count": 750
+    }
+]
