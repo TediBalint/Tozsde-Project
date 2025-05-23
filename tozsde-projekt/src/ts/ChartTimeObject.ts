@@ -1,4 +1,4 @@
 export default interface ChartTimeObject{
-    time: number | Number,
+    time: string,
     value: number | Number,
 }

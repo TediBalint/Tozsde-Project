@@ -11,45 +11,9 @@ const connection = () =>{
   ws = new WebSocket('ws://localhost:8081');
   ws.onopen = () =>{
     console.log('Connected to server');
-    updateStockButtons()
   }
-  ws.onmessage = (event) =>{
-    const data: ChartTimeObject[] = [ // teszt adatsor, majd ws küldi
-      { time: 0, value: 10 },
-      { time: 1, value: 20.5 },
-      { time: 2, value: 10 },
-      { time: 3, value: 50 },
-      { time: 4, value: 65 },
-      { time: 5, value: 30 },
-      { time: 6, value: 30 }
-    ];
-    let slicedDatasets:Array<any> = []
-    for (let i = 0; i < data.length - 1; i++) {
-      let tempData = data.slice(i, i + 2).map(row => row.value)
-      for(let j = 0; j < i; j++) tempData.unshift(NaN)
-      slicedDatasets.push(
-        {
-          borderColor: data[i].value < data[i + 1].value ? "#40db69" : (data[i].value > data[i + 1].value ? "#e69e19" : "#aaa"), //data[i].value < data[i + 1].value ? "#40db69" : "#e69e19",
-          data: tempData
-        }
-      )      
-    }
-    new Chart(ctx, {
-      type: 'line',
-      options:{
-        plugins:{
-          legend:{
-            display:false
-          }
-        }
-      },
-      data:{
-        labels: data.map(row => row.time), 
-        datasets: slicedDatasets
-      }
-    })
-    }
-  ws.onclose = () =>{
+  ws.onclose = (reason) =>{
+    console.log(reason);
     console.log('Disconnected from server');
   }
 }
@@ -57,9 +21,8 @@ window.onload = connection;
 (document.querySelector("#loginBtn") as HTMLButtonElement).addEventListener("click", ()=>{
   login();
 })
-let stocksNames = ["nvidia", "coca cola", "example3"]; // nyilvan nem lesz statikus ez sem
-let currentStock = stocksNames[0]
-
+let stocksNames;
+let currentStock = "---";
 const stockButtons = (document.querySelector("#stockSelector") as HTMLElement)
 
 const updateStockButtons = () =>{
@@ -73,6 +36,7 @@ const updateStockButtons = () =>{
     }
     btn.addEventListener("click", (e)=>{
       currentStock = (e.target as HTMLButtonElement).textContent as string
+      ws.send("chart change trigger")
       updateStockButtons()
     });
     stockButtons.appendChild(btn)
@@ -84,7 +48,10 @@ const login = () =>{
   const user = username.value;
   const pass = Password.value;
   ws.send(JSON.stringify({type: "login", user, pass}));
-  ws.onmessage = (event) =>{
+  ws.onmessage = (event) => onMessage(event, user)
+}
+let chart: Chart;
+const onMessage = (event, user) =>{
     const data = JSON.parse(event.data);
     if(data.type == "login"){
       if(data.success){
@@ -95,9 +62,65 @@ const login = () =>{
         (document.querySelector("#login") as HTMLElement).style.display = "none";
         
       }
-      else if(data.success == false){
-        alert("Hibás felhasználónév vagy jelszó!");
+      else{
+        // alert("Hibás felhasználónév vagy jelszó!");
+        (document.querySelector("#trading") as HTMLElement).style.display = "block"; // teszt miatt
+        (document.querySelector("#login") as HTMLElement).style.display = "none";
       }
     }
-  }
+    else if (data.type == "stockList"){
+      stocksNames = data.Names
+      if(currentStock == "---")currentStock = stocksNames[0]
+
+      updateStockButtons()
+
+    }
+    else if (data.type.includes("graph")){ //majd notificationt is ez kuldi
+      let rawData = data.value.CostData
+      let stockName = data.value.Name
+      if (currentStock == stockName){
+      try{chart.destroy()} catch{}      
+
+      let chartData: ChartTimeObject[] = []
+      for (let i = 0; i < rawData.length; i++) {
+        chartData.push({
+          time: `${(new Date()).getHours()}:${(new Date()).getMinutes()}`,
+          value: rawData[i]
+        })
+      }
+      let slicedDatasets:Array<any> = []
+      for (let i = 0; i < chartData.length - 1; i++) {
+        let tempData = chartData.slice(i, i + 2).map(row => row.value)
+        for(let j = 0; j < i; j++) tempData.unshift(NaN)
+        slicedDatasets.push(
+          {
+            borderColor: chartData[i].value < chartData[i + 1].value ? "#40db69" : (chartData[i].value > chartData[i + 1].value ? "#e69e19" : "#aaa"),
+            data: tempData
+          }
+        )      
+      }
+      chart = new Chart(ctx, {
+        type: 'line',
+        options:{
+          plugins:{
+            legend:{
+              display:false
+            }
+          },
+          elements: {
+            point:{
+                radius: 2
+            }
+           },
+           animation: {
+            duration: 0
+           } 
+        },
+        data:{
+          labels: chartData.map(row => row.time), 
+          datasets: slicedDatasets
+        }
+      })
+      }
+    }
 }

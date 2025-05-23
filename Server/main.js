@@ -4,9 +4,13 @@ import Serverside from "./Serveractions.js";;
 
 
 Serverside.server.on("connection", (socket) => {
+  console.log("client connected");
   socket.on("message", (message) => {
     Serverside.UpdateStockList(socket);
-    Serverside.SimulateStocks(socket);
+    if(message == "chart change trigger")
+      Serverside.SimulateStocks(socket, false);
+    else
+      Serverside.SimulateStocks(socket);
     try {
       const data = JSON.parse(message);
       let User = filterByName(Serverside.Userlist, data.user);
