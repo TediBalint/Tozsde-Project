@@ -54,18 +54,16 @@ function SendStockList(socket){
 }
 
 function SimulateStocks(socket) {
-    setInterval(() => {
-        Stocklist.forEach(stock => {
-            stock.Step();
-            UpdateStockList(socket,stock);
-        });
-    }, 30000);
+    Stocklist.forEach(stock => {
+        stock.Step();
+        UpdateStockList(socket,stock);
+    });
 }
 
 function SendStockData(socket,stock) {
     socket.send(
         JSON.stringify({
-            type: "stockData",
+            type: "stockData graph",
             CostData: stock.CostData,
             Name: stock.Name,
         })
@@ -79,4 +77,4 @@ server.on("error", (error) => {
 });
 
 export {UpdateStockList, UpdateUserList};
-export default {server,Userlist, Stocklist,UpdateUserList, UpdateStockList, SimulateStocks, SendStockData};
+export default {server,Userlist, Stocklist,UpdateUserList, UpdateStockList, SimulateStocks, SendStockData, SendStockList};

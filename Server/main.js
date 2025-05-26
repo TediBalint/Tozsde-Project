@@ -2,7 +2,7 @@ import { WebSocketServer } from "ws";
 import ClientActions from "./ClientActions.js";
 import Serverside from "./Serveractions.js";
 
-const CurrentStock = "";
+let CurrentStock = "";
 
 Serverside.server.on("connection", (socket) => {
   console.log("client connected");
@@ -19,16 +19,13 @@ Serverside.server.on("connection", (socket) => {
       if (data.type === "stock") {
         let stock = filterByName(Serverside.Stocklist, data.stock);
         CurrentStock = stock.name;
-        if (!StockCheck(socket, stock)) {
-          return;
-        }
         if (data.action == "buy") {
           ClientActions.BuyStock(socket, User, stock, data.amount);
         }
         if (data.action == "sell") {
           ClientActions.SellStock(socket, User, stock, data.amount);
-        }
-        if (data.goal == "getData") {
+        }        
+        if (data.action == "getData") {
           Serverside.SendStockData(socket, stock);
         }
       }

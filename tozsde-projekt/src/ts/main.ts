@@ -1,6 +1,7 @@
 import '../scss/style.scss';
 import Chart, { ChartItem } from 'chart.js/auto'
 import ChartTimeObject from './ChartTimeObject';
+import { log } from 'console';
 
 const ctx = document.getElementById('mainGraph') as ChartItem;
 let ws: WebSocket
@@ -36,7 +37,7 @@ const updateStockButtons = () => {
     }
     btn.addEventListener("click", (e) => {
       currentStock = (e.target as HTMLButtonElement).textContent as string
-      ws.send("chart change trigger")
+      askForStockData(currentStock)
       updateStockButtons();
     });
     stockButtons.appendChild(btn)
@@ -71,11 +72,12 @@ const onMessage = (event, user) => {
     stocksNames = data.Names
     if (currentStock == "---") currentStock = stocksNames[0];
     updateStockButtons();
+    askForStockData(currentStock)
   }
 
-  else if (data.type.includes("graph")) { //majd notificationt is ez kuldi
-    let rawData = data.value.CostData.slice(-200)
-    let stockName = data.value.Name
+  else if (data.type.includes("graph")) {    
+    let rawData = data.CostData.slice(-200)
+    let stockName = data.Name
     if (currentStock == stockName) {
       try { chart.destroy() } catch { }
       let chartData: ChartTimeObject[] = []
@@ -138,8 +140,8 @@ const onMessage = (event, user) => {
 const askForStockData = async (stockName: string) => {
   console.log(`Asking for stock data of ${stockName}`);
   while(currentStock == stockName) {
-    await new Promise(resolve => setTimeout(resolve, 3000));
     ws.send(JSON.stringify({ type: "stock", action:"getData", stock: stockName }));
+    await new Promise(resolve => setTimeout(resolve, 100));
   }
 
 };
