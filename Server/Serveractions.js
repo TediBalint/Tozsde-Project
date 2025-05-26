@@ -64,7 +64,7 @@ function SendStockData(socket,stock) {
     socket.send(
         JSON.stringify({
             type: "stockData graph",
-            CostData: stock.CostData,
+            CostData: stock.CostData.slice(-220),
             Name: stock.Name,
         })
     );

@@ -28,10 +28,10 @@ Serverside.server.on("connection", (socket) => {
         if (data.action == "getData") {
           Serverside.SendStockData(socket, stock);
         }
-      }
-      if (data.action == "alarm") {
-        ClientActions.SetAlarm(stock, data.goal, data.above);
-      }
+        if (data.action == "alarm") {
+          ClientActions.SetAlarm(stock, data.goal, data.above);
+        }
+      }  
     } catch (e) {
       socket.send(
         JSON.stringify({

@@ -1,7 +1,6 @@
 import '../scss/style.scss';
 import Chart, { ChartItem } from 'chart.js/auto'
 import ChartTimeObject from './ChartTimeObject';
-import { log } from 'console';
 
 const ctx = document.getElementById('mainGraph') as ChartItem;
 let ws: WebSocket
@@ -45,7 +44,6 @@ const updateStockButtons = () => {
 }
 
 const login = () => {
-  console.log("login");
   const user = username.value;
   const pass = Password.value;
   ws.send(JSON.stringify({ type: "login", user, pass }));
@@ -76,7 +74,7 @@ const onMessage = (event, user) => {
   }
 
   else if (data.type.includes("graph")) {    
-    let rawData = data.CostData.slice(-200)
+    let rawData = data.CostData
     let stockName = data.Name
     if (currentStock == stockName) {
       try { chart.destroy() } catch { }
@@ -125,23 +123,21 @@ const onMessage = (event, user) => {
 };
 (document.querySelector("#buyStock") as HTMLButtonElement).addEventListener("click", () => {
   let _amount = (document.querySelector("#buyAmount") as HTMLInputElement).value
-  ws.send(JSON.stringify({type: "buy", amount: _amount}))
+  ws.send(JSON.stringify({type: "stock", action: "buy", amount: _amount}))
 });
 (document.querySelector("#sellStock") as HTMLButtonElement).addEventListener("click", () => {
   let _amount = (document.querySelector("#sellAmount") as HTMLInputElement).value
-  ws.send(JSON.stringify({type: "sell", amount: _amount}))
+  ws.send(JSON.stringify({type: "stock", action: "sell", amount: _amount}))
 });
 (document.querySelector("#setNotifButton") as HTMLButtonElement).addEventListener("click", () => {
   let _goal = (document.querySelector("#notifValue") as HTMLInputElement).value
   let _above: boolean = (document.querySelector("#aboveSelector") as HTMLSelectElement).value == "1"
-  ws.send(JSON.stringify({type: "alarm", goal: _goal, above: _above}))
+  ws.send(JSON.stringify({type: "stock", action: "sell", goal: _goal, above: _above}))
 })
 
 const askForStockData = async (stockName: string) => {
-  console.log(`Asking for stock data of ${stockName}`);
   while(currentStock == stockName) {
     ws.send(JSON.stringify({ type: "stock", action:"getData", stock: stockName }));
     await new Promise(resolve => setTimeout(resolve, 100));
   }
-
 };
