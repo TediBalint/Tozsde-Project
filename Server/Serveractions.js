@@ -44,7 +44,7 @@ function UpdateStockList(socket,stock) {
     
 }
 
-function SendStockData(socket){
+function SendStockList(socket){
     socket.send(
         JSON.stringify({
             type: "stockList",

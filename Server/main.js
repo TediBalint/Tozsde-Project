@@ -13,7 +13,7 @@ Serverside.server.on("connection", (socket) => {
       let User = filterByName(Serverside.Userlist, data.user);
       if (data.type == "login") {
         if(ClientActions.Login(socket, User, data.pass))
-          {Serverside.SendStockData(socket);}
+          {Serverside.SendStockList(socket);}
       }
       if (data.type === "stock") {
         let stock = filterByName(Serverside.Stocklist, data.stock);
