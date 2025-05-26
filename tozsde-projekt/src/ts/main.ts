@@ -37,7 +37,7 @@ const updateStockButtons = () => {
     btn.addEventListener("click", (e) => {
       currentStock = (e.target as HTMLButtonElement).textContent as string
       ws.send("chart change trigger")
-      updateStockButtons()
+      updateStockButtons();
     });
     stockButtons.appendChild(btn)
   }
@@ -62,16 +62,15 @@ const onMessage = (event, user) => {
       (document.querySelector("#login") as HTMLElement).style.display = "none";
     }
     else {
-      // alert("Hibás felhasználónév vagy jelszó!");
-      (document.querySelector("#trading") as HTMLElement).style.display = "block"; // teszt miatt
-      (document.querySelector("#login") as HTMLElement).style.display = "none";
+      alert("Hibás felhasználónév vagy jelszó!");
+      // (document.querySelector("#trading") as HTMLElement).style.display = "block"; // teszt miatt
+      // (document.querySelector("#login") as HTMLElement).style.display = "none";
     }
   }
   else if (data.type == "stockList") {
     stocksNames = data.Names
-    if (currentStock == "---") currentStock = stocksNames[0]
-    updateStockButtons()
-
+    if (currentStock == "---") currentStock = stocksNames[0];
+    updateStockButtons();
   }
   else if (data.type.includes("graph")) { //majd notificationt is ez kuldi
     let rawData = data.value.CostData.slice(-100)
@@ -124,3 +123,12 @@ const onMessage = (event, user) => {
 (document.querySelector("#setNotifButton") as HTMLButtonElement).addEventListener("click", () => {
   alert("asd")
 })
+
+const askForStockData = async (stockName: string) => {
+  console.log(`Asking for stock data of ${stockName}`);
+  while(currentStock == stockName) {
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    ws.send(JSON.stringify({ type: "stock", action:"getData", stock: stockName }));
+  }
+
+}

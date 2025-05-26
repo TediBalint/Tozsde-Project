@@ -1,24 +1,24 @@
 import { WebSocketServer } from "ws";
 import ClientActions from "./ClientActions.js";
-import Serverside from "./Serveractions.js";;
+import Serverside from "./Serveractions.js";
 
+const CurrentStock = "";
 
 Serverside.server.on("connection", (socket) => {
   console.log("client connected");
   socket.on("message", (message) => {
-    Serverside.UpdateStockList(socket);
-    if(message == "chart change trigger")
-      Serverside.SimulateStocks(socket, false);
-    else
-      Serverside.SimulateStocks(socket);
     try {
       const data = JSON.parse(message);
       let User = filterByName(Serverside.Userlist, data.user);
       if (data.type == "login") {
-        ClientActions.Login(socket, User, data.pass);
+        if (ClientActions.Login(socket, User, data.pass)) {
+          Serverside.SimulateStocks(socket);
+          
+        }
       }
       if (data.type === "stock") {
         let stock = filterByName(Serverside.Stocklist, data.stock);
+        CurrentStock = stock.name;
         if (!StockCheck(socket, stock)) {
           return;
         }
@@ -29,13 +29,11 @@ Serverside.server.on("connection", (socket) => {
           ClientActions.SellStock(socket, User, stock, data.amount);
         }
         if (data.goal == "getData") {
-          setInterval(() => {
-            Serverside.SendStockData(socket, stock);
-          }, 10000);
+          Serverside.SendStockData(socket, stock);
         }
-        if (data.action == "alarm") {
-          ClientActions.SetAlarm(stock, data.goal);
-        }
+      }
+      if (data.action == "alarm") {
+        ClientActions.SetAlarm(stock, data.goal);
       }
     } catch (e) {
       socket.send(
@@ -47,7 +45,6 @@ Serverside.server.on("connection", (socket) => {
     }
   });
 });
-
 
 console.log("server started");
 

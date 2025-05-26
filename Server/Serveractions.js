@@ -52,22 +52,13 @@ function UpdateStockList(socket,stock) {
     );
 }
 
-function SimulateStocks(socket, repeat = true) {
-    Stocklist.forEach(stock => {
-        stock.Step();
-        // UpdateStockList(socket,stock);
-        socket.send(JSON.stringify({type: "updategraph", value: stock}))
-    }); // egybol kuld, nem csak x masodperc utan
-    if (repeat){
-        setInterval(() => {
-            Stocklist.forEach(stock => {
-                stock.Step();
-                // UpdateStockList(socket,stock); // biztos kell ez? csak mer egyszerre tul sok adat jon tole
-                socket.send(JSON.stringify({type: "updategraph", value: stock}))
-            });
-        }, 3000);
-    }
-    
+function SimulateStocks(socket) {
+    setInterval(() => {
+        Stocklist.forEach(stock => {
+            stock.Step();
+            UpdateStockList(socket,stock);
+        });
+    }, 30000);
 }
 
 function SendStockData(socket,stock) {
