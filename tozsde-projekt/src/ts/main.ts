@@ -43,8 +43,11 @@ const updateStockButtons = () => {
   }
 }
 
+let globalUser
+
 const login = () => {
   const user = username.value;
+  globalUser = user
   const pass = Password.value;
   ws.send(JSON.stringify({ type: "login", user, pass }));
   ws.onmessage = (event) => onMessage(event, user)
@@ -55,15 +58,12 @@ const onMessage = (event, user) => {
   if (data.type == "login") {
     if (data.success) {
       (document.querySelector('#usrnm') as HTMLElement).textContent = user;
-      console.log(data);
       (document.querySelector('#userStockCount') as HTMLElement).textContent = data.balance;
       (document.querySelector("#trading") as HTMLElement).style.display = "block";
       (document.querySelector("#login") as HTMLElement).style.display = "none";
     }
     else {
       alert("Hibás felhasználónév vagy jelszó!");
-      // (document.querySelector("#trading") as HTMLElement).style.display = "block"; // teszt miatt
-      // (document.querySelector("#login") as HTMLElement).style.display = "none";
     }
   }
   else if (data.type == "stockList") {
@@ -120,24 +120,28 @@ const onMessage = (event, user) => {
       })
     }
   }
+  else if (data.type == "buy"){
+    console.log("bought");
+    
+  }
 };
-(document.querySelector("#buyStock") as HTMLButtonElement).addEventListener("click", () => {
-  let _amount = (document.querySelector("#buyAmount") as HTMLInputElement).value
-  ws.send(JSON.stringify({type: "stock", action: "buy", amount: _amount}))
+(document.querySelector("#buyStock") as HTMLButtonElement).addEventListener("click", () => {  
+  let _amount :Number = Number((document.querySelector("#buyAmount") as HTMLInputElement).value)
+  ws.send(JSON.stringify({type: "stock", action: "buy", amount: _amount, stock: currentStock, user: globalUser}))
 });
 (document.querySelector("#sellStock") as HTMLButtonElement).addEventListener("click", () => {
   let _amount = (document.querySelector("#sellAmount") as HTMLInputElement).value
-  ws.send(JSON.stringify({type: "stock", action: "sell", amount: _amount}))
+  ws.send(JSON.stringify({type: "stock", action: "sell", amount: _amount, stock: currentStock, user: globalUser}))
 });
 (document.querySelector("#setNotifButton") as HTMLButtonElement).addEventListener("click", () => {
   let _goal = (document.querySelector("#notifValue") as HTMLInputElement).value
   let _above: boolean = (document.querySelector("#aboveSelector") as HTMLSelectElement).value == "1"
-  ws.send(JSON.stringify({type: "stock", action: "sell", goal: _goal, above: _above}))
+  ws.send(JSON.stringify({type: "stock", action: "sell", goal: _goal, above: _above, stock: currentStock, user: globalUser}))
 })
 
 const askForStockData = async (stockName: string) => {
   while(currentStock == stockName) {
     ws.send(JSON.stringify({ type: "stock", action:"getData", stock: stockName }));
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise(resolve => setTimeout(resolve, 3000));
   }
 };
