@@ -121,8 +121,10 @@ const onMessage = (event, user) => {
     }
   }
   else if (data.type == "buy"){
-    console.log("bought");
-    
+    console.log(`bought ${data.amount} of ${data.stock} stock`);
+  }
+  else if (data.type == "sell"){
+    console.log(`sold ${data.amount} of ${data.stock} stock`);
   }
 };
 (document.querySelector("#buyStock") as HTMLButtonElement).addEventListener("click", () => {  

@@ -29,8 +29,8 @@ export default class Stock {
 
   Buy(amount) {
     const currentPrice = this.CostData[this.CostData.length - 1];
-    const newPrice = currentPrice;
-    const priceIncrease = 0;
+    let newPrice = currentPrice;
+    let priceIncrease = 0;
 
     for (let i = 0; i < amount; i++) {
       if (this.Count <= 0) {
@@ -50,7 +50,7 @@ export default class Stock {
 
   Sell(amount) {
     const currentPrice = this.CostData[this.CostData.length - 1];
-    const priceDecrease = 0;
+    let priceDecrease = 0;
     let newPrice = currentPrice;
     for (let i = 0; i < amount; i++) {
       if (this.Count >= this.MaxCount) {

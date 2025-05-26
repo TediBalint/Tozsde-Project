@@ -3,12 +3,32 @@
         "Id": 1,
         "Name": "Alice",
         "Password": "password123",
-        "Balance": 1000
+        "Balance": 1000,
+        "Stocks": [
+            {
+                "Id": 2,
+                "Count": 15
+            },
+            {
+                "Id": 1,
+                "Count": 5
+            }
+        ]
     },
     {
         "Id": 2,
         "Name": "Bob",
         "Password": "securepass",
-        "Balance": 500
+        "Balance": 500,
+        "Stocks": [
+            {
+                "Id": 3,
+                "Count": 8
+            },
+            {
+                "Id": 5,
+                "Count": 1
+            }
+        ]
     }
 ]

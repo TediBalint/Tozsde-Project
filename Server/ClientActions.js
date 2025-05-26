@@ -64,8 +64,8 @@ function StockCheck(socket, stock) {
 
 function SellStock(socket, user, stock, amount) {
   const Price = stock.CostData[stock.CostData.length - 1];
-  let stockIndex = user.Stocks.findIndex((s) => s.Name === stock.Name);
-    if (Stock.Sell(amount)) {
+  let stockIndex = user.Stocks.findIndex((s) => s.Id === stock.Id);
+    if (stock.Sell(amount)) {
       user.Balance += amount * Price;
       if (stockIndex == -1) {
         user.Stocks.push({
@@ -90,6 +90,8 @@ function SellStock(socket, user, stock, amount) {
         type: "sell",
         success: true,
         balance: user.Balance,
+        stock: stock.Name,
+        amount: amount,
       })
     );
     UpdateStockList(socket, stock);
@@ -99,8 +101,8 @@ function SellStock(socket, user, stock, amount) {
 
 function BuyStock(socket, user, stock, amount) {
   const Price = stock.CostData[stock.CostData.length - 1];
-  let stockIndex = user.Stocks.findIndex((s) => s.Name == stock.Name);
-    if (Stock.Buy(amount)) {
+  let stockIndex = user.Stocks.findIndex((s) => s.Id == stock.Id);
+    if (stock.Buy(amount)) {
       user.Balance -= amount * Price;
       if (stockIndex == -1) {
         user.Stocks.push({
@@ -126,7 +128,10 @@ function BuyStock(socket, user, stock, amount) {
     JSON.stringify({
       type: "buy",
       success: true,
+      stock: stock.Name,
+      amount: amount,
       balance: user.Balance,
+
     })
   );
    UpdateStockList(socket,stock);
