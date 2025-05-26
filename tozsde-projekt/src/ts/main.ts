@@ -21,6 +21,11 @@ window.onload = connection;
 (document.querySelector("#loginBtn") as HTMLButtonElement).addEventListener("click", () => {
   login();
 })
+let loggedIn = false
+window.addEventListener("keydown", (e)=>{
+  if(e.key == "Enter" && !loggedIn)
+    login()
+})
 let stocksNames;
 let currentStock = "---";
 const stockButtons = (document.querySelector("#stockSelector") as HTMLElement)
@@ -61,6 +66,7 @@ const onMessage = (event, user) => {
       (document.querySelector('#userStockCount') as HTMLElement).textContent = data.balance;
       (document.querySelector("#trading") as HTMLElement).style.display = "block";
       (document.querySelector("#login") as HTMLElement).style.display = "none";
+      loggedIn = true
     }
     else {
       alert("Hibás felhasználónév vagy jelszó!");
