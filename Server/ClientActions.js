@@ -25,18 +25,19 @@ function Login(socket, user, pass) {
   }
 }
 
-function SetAlarm(stock, goal) {
+function SetAlarm(stock, goal, above) {
   AlarmList.push({
     stock: stock,
     goal: goal,
+    above: above
   });
 }
 
-function CheckAlarm(socket, stock) {
+function CheckAlarm(socket, stock, above) {
   AlarmList.forEach((alarm) => {
     if (alarm.stock.Name === stock.Name) {
       let currPrice = stock.CostData[stock.CostData.length - 1];
-      if (currPrice >= alarm.goal) {
+      if ((above && currPrice >= alarm.goal) || (!above && currPrice <= alarm.goal)) {
         socket.send(
           JSON.stringify({
             type: "alarm",

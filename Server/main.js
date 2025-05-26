@@ -33,7 +33,7 @@ Serverside.server.on("connection", (socket) => {
         }
       }
       if (data.action == "alarm") {
-        ClientActions.SetAlarm(stock, data.goal);
+        ClientActions.SetAlarm(stock, data.goal, data.above);
       }
     } catch (e) {
       socket.send(

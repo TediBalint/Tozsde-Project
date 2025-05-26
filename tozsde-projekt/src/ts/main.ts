@@ -72,8 +72,9 @@ const onMessage = (event, user) => {
     if (currentStock == "---") currentStock = stocksNames[0];
     updateStockButtons();
   }
+
   else if (data.type.includes("graph")) { //majd notificationt is ez kuldi
-    let rawData = data.value.CostData.slice(-100)
+    let rawData = data.value.CostData.slice(-200)
     let stockName = data.value.Name
     if (currentStock == stockName) {
       try { chart.destroy() } catch { }
@@ -120,8 +121,18 @@ const onMessage = (event, user) => {
     }
   }
 };
+(document.querySelector("#buyStock") as HTMLButtonElement).addEventListener("click", () => {
+  let _amount = (document.querySelector("#buyAmount") as HTMLInputElement).value
+  ws.send(JSON.stringify({type: "buy", amount: _amount}))
+});
+(document.querySelector("#sellStock") as HTMLButtonElement).addEventListener("click", () => {
+  let _amount = (document.querySelector("#sellAmount") as HTMLInputElement).value
+  ws.send(JSON.stringify({type: "sell", amount: _amount}))
+});
 (document.querySelector("#setNotifButton") as HTMLButtonElement).addEventListener("click", () => {
-  alert("asd")
+  let _goal = (document.querySelector("#notifValue") as HTMLInputElement).value
+  let _above: boolean = (document.querySelector("#aboveSelector") as HTMLSelectElement).value == "1"
+  ws.send(JSON.stringify({type: "alarm", goal: _goal, above: _above}))
 })
 
 const askForStockData = async (stockName: string) => {
@@ -131,4 +142,4 @@ const askForStockData = async (stockName: string) => {
     ws.send(JSON.stringify({ type: "stock", action:"getData", stock: stockName }));
   }
 
-}
+};

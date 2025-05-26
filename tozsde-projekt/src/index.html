@@ -19,16 +19,16 @@
         <div id="stockSelector"></div>
         <canvas id="mainGraph" style="border: .5px solid white;" width="1000" height="500"></canvas>
         <br>
-        <input type="number" id="buyAmount" min="0">$
-        <button>Buy</button>
-        <input type="number" id="sellAmount" min="0">$
-        <button>Sell</button>
+        <input type="number" id="buyAmount" min="0">
+        <button id="buyStock">Buy</button>
+        <input type="number" id="sellAmount" min="0">
+        <button id="sellStock">Sell</button>
         | Send notification if
-        <select name="" id="">
-          <option value="above">above</option>
-          <option value="above">under</option>
+        <select name="" id="aboveSelector">
+          <option value="1">above</option>
+          <option value="0">under</option>
         </select>
-        <input type="number">
+        <input type="number" id="notifValue">
         <button id="setNotifButton">Set</button>
       </div>
     <footer style="color: rgba(255, 255, 255, 0.7); text-align: center; margin-top: 70px;">
