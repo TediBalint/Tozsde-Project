@@ -41,13 +41,14 @@ function UpdateStockList(socket,stock) {
         }
     }
     let json = JSON.stringify(Stocklist);
+    
+}
 
+function SendStockData(socket){
     socket.send(
         JSON.stringify({
             type: "stockList",
             Names: Stocklist.map((stock) => stock.Name),
-            CostData: stock.CostData,
-            CurrentStock: stock.Name,
         })
     );
 }

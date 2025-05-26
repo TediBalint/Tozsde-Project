@@ -12,7 +12,8 @@ Serverside.server.on("connection", (socket) => {
       const data = JSON.parse(message);
       let User = filterByName(Serverside.Userlist, data.user);
       if (data.type == "login") {
-        ClientActions.Login(socket, User, data.pass)
+        if(ClientActions.Login(socket, User, data.pass))
+          {Serverside.SendStockData(socket);}
       }
       if (data.type === "stock") {
         let stock = filterByName(Serverside.Stocklist, data.stock);
