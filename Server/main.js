@@ -8,13 +8,11 @@ Serverside.server.on("connection", (socket) => {
   console.log("client connected");
   socket.on("message", (message) => {
     try {
+      Serverside.SimulateStocks(socket);
       const data = JSON.parse(message);
       let User = filterByName(Serverside.Userlist, data.user);
       if (data.type == "login") {
-        if (ClientActions.Login(socket, User, data.pass)) {
-          Serverside.SimulateStocks(socket);
-          
-        }
+        ClientActions.Login(socket, User, data.pass)
       }
       if (data.type === "stock") {
         let stock = filterByName(Serverside.Stocklist, data.stock);
