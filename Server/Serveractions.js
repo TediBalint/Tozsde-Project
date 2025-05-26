@@ -65,7 +65,7 @@ function SimulateStocks(socket, repeat = true) {
                 // UpdateStockList(socket,stock); // biztos kell ez? csak mer egyszerre tul sok adat jon tole
                 socket.send(JSON.stringify({type: "updategraph", value: stock}))
             });
-        }, 3000);
+        }, 100); // teszt miatt
     }
     
 }
