@@ -33,7 +33,7 @@ function UpdateUserList(socket,user) {
     );
 }
 
-function UpdateStockList(socket,stock) {
+function UpdateStockList(stock) {
     for (let i = 0; i < Stocklist.length; i++) {
         stock = Object.assign(new Stock(), Stocklist[i]); //mivel a fájlban csak a propertyk vannak mentve, a methodok elvesznének
         if (Stocklist[i].Id == stock.Id) {

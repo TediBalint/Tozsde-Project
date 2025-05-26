@@ -8,6 +8,7 @@ Serverside.server.on("connection", (socket) => {
   console.log("client connected");
   socket.on("message", (message) => {
     try {
+      Serverside.UpdateStockList();
       Serverside.SimulateStocks(socket);
       const data = JSON.parse(message);
       let User = filterByName(Serverside.Userlist, data.user);
