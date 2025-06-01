@@ -103,6 +103,7 @@ function BuyStock(socket, user, stock, amount) {
   const Price = stock.CostData[stock.CostData.length - 1];
   let stockIndex = user.Stocks.findIndex((s) => s.Id == stock.Id);
     if (stock.Buy(amount)) {
+      //kene ide if
       user.Balance -= amount * Price;
       if (stockIndex == -1) {
         user.Stocks.push({

@@ -28,6 +28,7 @@ window.addEventListener("keydown", (e)=>{
 })
 let stocksNames;
 let currentStock = "---";
+let stopThisStock = ""
 const stockButtons = (document.querySelector("#stockSelector") as HTMLElement)
 
 const updateStockButtons = () => {
@@ -40,6 +41,7 @@ const updateStockButtons = () => {
       btn.classList.add("selectedStock")
     }
     btn.addEventListener("click", (e) => {
+      stopThisStock = currentStock
       currentStock = (e.target as HTMLButtonElement).textContent as string
       askForStockData(currentStock)
       updateStockButtons();
@@ -49,9 +51,10 @@ const updateStockButtons = () => {
 }
 
 let globalUser
+let userStocks:any[] = []
 
 const login = () => {
-  const user = username.value;
+  const user = username.value;  
   globalUser = user
   const pass = Password.value;
   ws.send(JSON.stringify({ type: "login", user, pass }));
@@ -63,10 +66,16 @@ const onMessage = (event, user) => {
   if (data.type == "login") {
     if (data.success) {
       (document.querySelector('#usrnm') as HTMLElement).textContent = user;
-      (document.querySelector('#userStockCount') as HTMLElement).textContent = data.balance;
+      (document.querySelector('#userBalance') as HTMLElement).textContent = data.balance;
       (document.querySelector("#trading") as HTMLElement).style.display = "block";
       (document.querySelector("#login") as HTMLElement).style.display = "none";
-      loggedIn = true
+      if(userStocks.filter(x => x.Id == stocksNames.indexOf(currentStock) + 1)[0] != undefined)
+        (document.querySelector("#userStockCount") as HTMLElement).textContent = userStocks.filter(x => x.Id == stocksNames.indexOf(currentStock) + 1)[0].Count
+      else{
+        (document.querySelector("#userStockCount") as HTMLElement).textContent = "0"
+      }      
+      userStocks = data.usrStocks
+      loggedIn = true      
     }
     else {
       alert("Hibás felhasználónév vagy jelszó!");
@@ -79,7 +88,7 @@ const onMessage = (event, user) => {
     askForStockData(currentStock)
   }
 
-  else if (data.type.includes("graph")) {    
+  else if (data.type == "stockData") {    
     let rawData = data.CostData
     let stockName = data.Name
     if (currentStock == stockName) {
@@ -128,9 +137,12 @@ const onMessage = (event, user) => {
   }
   else if (data.type == "buy"){
     console.log(`bought ${data.amount} of ${data.stock} stock`);
+    (document.querySelector('#userBalance') as HTMLElement).textContent = data.balance;    
+    // (document.querySelector("#userStockCount") as HTMLElement).textContent = userStocks.filter(x => x.Id == stocksNames.indexOf(currentStock) + 1)[0].Count
   }
   else if (data.type == "sell"){
     console.log(`sold ${data.amount} of ${data.stock} stock`);
+    (document.querySelector('#userBalance') as HTMLElement).textContent = data.balance;    
   }
 };
 (document.querySelector("#buyStock") as HTMLButtonElement).addEventListener("click", () => {  
@@ -150,6 +162,12 @@ const onMessage = (event, user) => {
 const askForStockData = async (stockName: string) => {
   while(currentStock == stockName) {
     ws.send(JSON.stringify({ type: "stock", action:"getData", stock: stockName }));
+    if(userStocks.filter(x => x.Id == stocksNames.indexOf(currentStock) + 1)[0] != undefined)
+      (document.querySelector("#userStockCount") as HTMLElement).textContent = userStocks.filter(x => x.Id == stocksNames.indexOf(currentStock) + 1)[0].Count
+    else{
+     (document.querySelector("#userStockCount") as HTMLElement).textContent = "0"
+    }
     await new Promise(resolve => setTimeout(resolve, 3000));
+    if(stockName == stopThisStock) return
   }
 };

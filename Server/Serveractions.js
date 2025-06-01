@@ -1,7 +1,6 @@
 import fs from "fs";
 import { WebSocketServer } from "ws";
 import Stock from "./Stock.js";
-import { json } from "stream/consumers";
 
 const server = new WebSocketServer({
   port: 8081,
@@ -63,7 +62,7 @@ function SimulateStocks(socket) {
 function SendStockData(socket,stock) {
     socket.send(
         JSON.stringify({
-            type: "stockData graph",
+            type: "stockData",
             CostData: stock.CostData.slice(-220),
             Name: stock.Name,
         })
