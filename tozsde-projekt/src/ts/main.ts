@@ -28,6 +28,7 @@ window.addEventListener("keydown", (e)=>{
 })
 let stocksNames;
 let currentStock = "---";
+let stopThisStock = ""
 const stockButtons = (document.querySelector("#stockSelector") as HTMLElement)
 
 const updateStockButtons = () => {
@@ -40,6 +41,7 @@ const updateStockButtons = () => {
       btn.classList.add("selectedStock")
     }
     btn.addEventListener("click", (e) => {
+      stopThisStock = currentStock
       currentStock = (e.target as HTMLButtonElement).textContent as string
       askForStockData(currentStock)
       updateStockButtons();
@@ -166,5 +168,6 @@ const askForStockData = async (stockName: string) => {
      (document.querySelector("#userStockCount") as HTMLElement).textContent = "0"
     }
     await new Promise(resolve => setTimeout(resolve, 3000));
+    if(stockName == stopThisStock) return
   }
 };
