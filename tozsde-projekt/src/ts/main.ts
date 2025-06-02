@@ -176,7 +176,7 @@ const askForStockData = async (stockName: string) => {
       else{
        (document.querySelector("#userStockCount") as HTMLElement).textContent = "0"
       }
-      ws.send(JSON.stringify({type:"stock", action:"checkAlarm",stock:stockName}))
+      // ws.send(JSON.stringify({type:"stock", action:"checkAlarm",stock:stockName}))
       await new Promise(resolve => setTimeout(resolve, 3000));
     }
   }
