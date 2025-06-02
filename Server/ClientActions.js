@@ -33,7 +33,7 @@ function SetAlarm(stock, goal, above) {
   });
 }
 
-function CheckAlarm(socket, stock, above) {
+function CheckAlarm(socket, stock) {
   AlarmList.forEach((alarm) => {
     if (alarm.stock.Name === stock.Name) {
       let currPrice = stock.CostData[stock.CostData.length - 1];

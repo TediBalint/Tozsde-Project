@@ -19,6 +19,7 @@ Serverside.server.on("connection", (socket) => {
       if (data.type === "stock") {
         let stock = filterByName(Serverside.Stocklist, data.stock);
         CurrentStock = stock.name;
+        CheckAlarm(socket, stock);
         if (data.action == "buy") {
           ClientActions.BuyStock(socket, User, stock, data.amount);
         }
