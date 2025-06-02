@@ -31,6 +31,9 @@ Serverside.server.on("connection", (socket) => {
         if (data.action == "alarm") {
           ClientActions.SetAlarm(stock, data.goal, data.above);
         }
+        if( data.action == "checkAlarm") {
+          ClientActions.CheckAlarm(socket, stock);
+        }
       }  
     } catch (e) {
       socket.send(
