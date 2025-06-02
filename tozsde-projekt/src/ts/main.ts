@@ -28,7 +28,8 @@ window.addEventListener("keydown", (e)=>{
 })
 let stocksNames;
 let currentStock = "---";
-let stopThisStock = ""
+let startChart = true;
+
 const stockButtons = (document.querySelector("#stockSelector") as HTMLElement)
 
 const updateStockButtons = () => {
@@ -41,8 +42,8 @@ const updateStockButtons = () => {
       btn.classList.add("selectedStock")
     }
     btn.addEventListener("click", (e) => {
-      stopThisStock = currentStock
       currentStock = (e.target as HTMLButtonElement).textContent as string
+      startChart = !(e.target as HTMLButtonElement).classList.contains("selectedStock") 
       askForStockData(currentStock)
       updateStockButtons();
     });
@@ -66,7 +67,7 @@ const onMessage = (event, user) => {
   if (data.type == "login") {
     if (data.success) {
       (document.querySelector('#usrnm') as HTMLElement).textContent = user;
-      (document.querySelector('#userBalance') as HTMLElement).textContent = data.balance;
+      (document.querySelector('#userBalance') as HTMLElement).textContent = (data.balance as number).toFixed();
       (document.querySelector("#trading") as HTMLElement).style.display = "block";
       (document.querySelector("#login") as HTMLElement).style.display = "none";
       if(userStocks.filter(x => x.Id == stocksNames.indexOf(currentStock) + 1)[0] != undefined)
@@ -137,12 +138,18 @@ const onMessage = (event, user) => {
   }
   else if (data.type == "buy"){
     console.log(`bought ${data.amount} of ${data.stock} stock`);
-    (document.querySelector('#userBalance') as HTMLElement).textContent = data.balance;    
-    // (document.querySelector("#userStockCount") as HTMLElement).textContent = userStocks.filter(x => x.Id == stocksNames.indexOf(currentStock) + 1)[0].Count
+    (document.querySelector('#userBalance') as HTMLElement).textContent = (data.balance as number).toFixed();
+    let newAmount = userStocks.filter(x => x.Id == stocksNames.indexOf(currentStock) + 1)[0].Count += data.amount;
+    (document.querySelector("#userStockCount") as HTMLElement).textContent = newAmount
   }
   else if (data.type == "sell"){
     console.log(`sold ${data.amount} of ${data.stock} stock`);
-    (document.querySelector('#userBalance') as HTMLElement).textContent = data.balance;    
+    (document.querySelector('#userBalance') as HTMLElement).textContent = (data.balance as number).toFixed();
+    let newAmount : number = userStocks.filter(x => x.Id == stocksNames.indexOf(currentStock) + 1)[0].Count -= data.amount;
+    (document.querySelector("#userStockCount") as HTMLElement).textContent = newAmount.toString()
+  }
+  else if (data.type == "alarm"){
+    alert(data.message)
   }
 };
 (document.querySelector("#buyStock") as HTMLButtonElement).addEventListener("click", () => {  
@@ -159,15 +166,18 @@ const onMessage = (event, user) => {
   ws.send(JSON.stringify({type: "stock", action: "sell", goal: _goal, above: _above, stock: currentStock, user: globalUser}))
 })
 
+
 const askForStockData = async (stockName: string) => {
-  while(currentStock == stockName) {
-    ws.send(JSON.stringify({ type: "stock", action:"getData", stock: stockName }));
-    if(userStocks.filter(x => x.Id == stocksNames.indexOf(currentStock) + 1)[0] != undefined)
-      (document.querySelector("#userStockCount") as HTMLElement).textContent = userStocks.filter(x => x.Id == stocksNames.indexOf(currentStock) + 1)[0].Count
-    else{
-     (document.querySelector("#userStockCount") as HTMLElement).textContent = "0"
+  if(startChart){
+    while(true) {
+      ws.send(JSON.stringify({ type: "stock", action:"getData", stock: stockName }));
+      if(userStocks.filter(x => x.Id == stocksNames.indexOf(currentStock) + 1)[0] != undefined)
+        (document.querySelector("#userStockCount") as HTMLElement).textContent = userStocks.filter(x => x.Id == stocksNames.indexOf(currentStock) + 1)[0].Count
+      else{
+       (document.querySelector("#userStockCount") as HTMLElement).textContent = "0"
+      }
+      ws.send(JSON.stringify({type:"stock", action:"checkAlarm",stock:stockName}))
+      await new Promise(resolve => setTimeout(resolve, 3000));
     }
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    if(stockName == stopThisStock) return
   }
 };
